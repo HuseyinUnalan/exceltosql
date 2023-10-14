@@ -1,44 +1,44 @@
-<?php
-// Veritabanı bağlantısı
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "burs";
+<!DOCTYPE html>
+<html lang="en">
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+<head>
+  <title>Excel to SQL</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
 
-if ($conn->connect_error) {
-    die("Veritabanına bağlantı hatası: " . $conn->connect_error);
-}
+<body>
 
-// Excel dosyasının yolu
-$excelDosya = "veriler.xlsx"; // Excel dosyanızın adını ve yolunu değiştirin
+  <div class="container mt-3">
+    <h2>Excel to SQL</h2>
 
-// PhpSpreadsheet'i yükle
-require 'vendor/autoload.php';
-use PhpOffice\PhpSpreadsheet\IOFactory;
+    <?php
 
-$objPHPExcel = IOFactory::load($excelDosya);
-
-// İlk sayfayı seç
-$sheet = $objPHPExcel->getActiveSheet();
-
-// Verileri oku ve SQL veritabanına ekleyin
-foreach ($sheet->getRowIterator() as $row) {
-    $veri = array();
-    foreach ($row->getCellIterator() as $cell) {
-        $veri[] = $cell->getValue();
+    if (isset($_GET['process'])) {
+      if ($_GET['process'] == 'success') { ?>
+        <div class="alert alert-success">
+          <strong>Success!</strong> Export to SQL Successful
+        </div>
+      <?php } else { ?>
+        <div class="alert alert-danger">
+          <strong>Error!</strong> Something Went Wrong
+        </div>
+    <?php  }
     }
 
- // SQL sorgusu
- $sql = "INSERT INTO kayitlar (bos, kayit_ad, kayit_soyad, kayit_baba, kayit_durum, kayit_aciklama) VALUES ('" . $veri[0] . "', '" . $veri[1] . "', '" . $veri[2] . "', '" . $veri[3] . "' , '" . $veri[4] . "' , '" . $veri[5] . "')";
+    ?>
 
-    if ($conn->query($sql) === TRUE) {
-        echo "Veri başarıyla eklenmiştir.<br>";
-    } else {
-        echo "Hata: " . $sql . "<br>" . $conn->error;
-    }
-}
+    <form action="process.php" method="POST">
+      <div class="input-group mb-3">
+        <input type="file" class="form-control" accept=".xlsx, .xls" placeholder="Excel File" name="file">
+      </div>
 
-// Veritabanı bağlantısını kapat
-$conn->close();
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+
+</body>
+
+</html>
